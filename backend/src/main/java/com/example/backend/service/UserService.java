@@ -35,7 +35,7 @@ public class UserService implements UserDetailsService {
         if(userRepository.existsUserByUsername(username)){
             throw new IllegalArgumentException("이미 가입된 이메일 입니다.");
         }
-        if(password1!=password2){
+        if(!passwordEncoder.matches(password1, password2)){
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
         User newUser=User.builder()
