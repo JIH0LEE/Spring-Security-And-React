@@ -1,25 +1,15 @@
 package com.example.backend.service;
 
-import com.auth0.jwt.exceptions.TokenExpiredException;
-import com.example.backend.config.JWTUtil;
-import com.example.backend.config.VerifyResult;
 import com.example.backend.model.dto.LoginDto;
+import com.example.backend.model.dto.RegisterDto;
 import com.example.backend.model.entity.User;
 import com.example.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Bean;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
 
 @Service
@@ -36,15 +26,21 @@ public class UserService implements UserDetailsService {
                 ()->new UsernameNotFoundException(username));
     }
 
+    public User makeUser(RegisterDto registerDto){
 
+        String username= registerDto.getUsername();
+        String password1= registerDto.getPassword1();
+        String password2=registerDto.getPassword2();
 
-    public User getUser(LoginDto loginDto){
-        return userRepository.getUserByUsername(loginDto.getUsername());
-    }
-    public User makeUser(LoginDto loginDto){
+        if(userRepository.existsUserByUsername(username)){
+            throw new IllegalArgumentException("이미 가입된 이메일 입니다.");
+        }
+        if(password1!=password2){
+            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+        }
         User newUser=User.builder()
-                .username(loginDto.getUsername())
-                .password(loginDto.getPassword())
+                .username(registerDto.getUsername())
+                .password(passwordEncoder.encode(registerDto.getPassword1()))
                 .role("ROLE_USER")
                 .enabled(true)
                 .build();

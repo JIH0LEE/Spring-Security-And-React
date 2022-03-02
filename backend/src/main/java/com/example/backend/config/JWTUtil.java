@@ -5,7 +5,6 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 
 import com.example.backend.model.entity.User;
-import lombok.Value;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
@@ -32,15 +31,19 @@ public class JWTUtil {
     }
 
     public static VerifyResult verify(String token){
-        try {
-            DecodedJWT verify = JWT.require(ALGORITHM).build().verify(token);
-            return VerifyResult.builder().success(true)
-                    .username(verify.getSubject()).build();
-        }catch(Exception ex){
-            DecodedJWT decode = JWT.decode(token);
-            return VerifyResult.builder().success(false)
-                    .username(decode.getSubject()).build();
-        }
+//        try {
+//            DecodedJWT verify = JWT.require(ALGORITHM).build().verify(token);
+//            return VerifyResult.builder().success(true)
+//                    .username(verify.getSubject()).build();
+//        }catch(Exception ex){
+//            System.out.println("test1");
+//            DecodedJWT decode = JWT.decode(token);
+//            return VerifyResult.builder().success(false)
+//                    .username(decode.getSubject()).build();
+//        }
+        DecodedJWT verify = JWT.require(ALGORITHM).build().verify(token);
+        return VerifyResult.builder().success(true)
+                .username(verify.getSubject()).build();
     }
 
 }

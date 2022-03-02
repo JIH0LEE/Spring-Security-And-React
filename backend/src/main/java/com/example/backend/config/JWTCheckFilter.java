@@ -1,18 +1,15 @@
 package com.example.backend.config;
 
-import com.auth0.jwt.exceptions.TokenExpiredException;
+
 import com.example.backend.model.entity.User;
 import com.example.backend.service.UserService;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-//import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -38,17 +35,33 @@ public class JWTCheckFilter extends OncePerRequestFilter {
             return;
         }
         String token = bearer.substring("Bearer ".length());
-        VerifyResult result = JWTUtil.verify(token);
-        if(result.isSuccess()){
+//        VerifyResult result = JWTUtil.verify(token);
+        try{
+            VerifyResult result = JWTUtil.verify(token);
             User user = (User) userService.loadUserByUsername(result.getUsername());
             UsernamePasswordAuthenticationToken userToken = new UsernamePasswordAuthenticationToken(
                     user.getUsername(), null, user.getAuthorities()
             );
             SecurityContextHolder.getContext().setAuthentication(userToken);
             chain.doFilter(request, response);
-        }else{
-            throw new TokenExpiredException("Token is not valid");
+
+        }catch(Exception e){
+            response.setStatus(200);
+            response.setContentType("application/json;charset=UTF-8");
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().println("{ \"success\" :" + false+"}" );
         }
+
+//        if(result.isSuccess()){
+//            User user = (User) userService.loadUserByUsername(result.getUsername());
+//            UsernamePasswordAuthenticationToken userToken = new UsernamePasswordAuthenticationToken(
+//                    user.getUsername(), null, user.getAuthorities()
+//            );
+//            SecurityContextHolder.getContext().setAuthentication(userToken);
+//            chain.doFilter(request, response);
+//        }else{
+//            throw new TokenExpiredException("Token is not valid");
+//        }
     }
 
 }
