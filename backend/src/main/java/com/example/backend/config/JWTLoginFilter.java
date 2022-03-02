@@ -27,7 +27,7 @@ public class JWTLoginFilter extends UsernamePasswordAuthenticationFilter {
     private ObjectMapper objectMapper = new ObjectMapper();
 
 
-    private UserService userService;
+    private UserService userService;    
 
 
 

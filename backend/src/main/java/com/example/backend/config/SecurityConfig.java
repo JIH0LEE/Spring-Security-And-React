@@ -2,6 +2,7 @@ package com.example.backend.config;
 
 import com.example.backend.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -17,20 +18,19 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 @EnableWebSecurity
 //@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-    private final UserService userService;
-    @Bean
-    PasswordEncoder passwordEncoder(){
-        return NoOpPasswordEncoder.getInstance();
-    }
+    private final JWTCheckFilter checkFilter;
+
+
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        JWTLoginFilter loginFilter = new JWTLoginFilter(authenticationManager(), userService);
-        JWTCheckFilter checkFilter = new JWTCheckFilter(authenticationManager(), userService);
+//        JWTLoginFilter loginFilter = new JWTLoginFilter(authenticationManager(), userService);
+//        JWTCheckFilter checkFilter = new JWTCheckFilter(authenticationManager(), userService);
         http.
                 csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                .addFilterAt(loginFilter, UsernamePasswordAuthenticationFilter.class)
+//                .addFilterAt(loginFilter, UsernamePasswordAuthenticationFilter.class)
                 //토큰을 검증
                 .addFilterAt(checkFilter, BasicAuthenticationFilter.class)
                 .authorizeRequests()

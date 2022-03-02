@@ -6,9 +6,11 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 
 import com.example.backend.model.entity.User;
 import lombok.Value;
+import org.springframework.stereotype.Component;
 
 import java.time.Instant;
 
+@Component
 public class JWTUtil {
 
     private static final Algorithm ALGORITHM = Algorithm.HMAC256("test");
