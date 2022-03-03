@@ -31,27 +31,37 @@ public class JWTCheckFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
         String bearer = request.getHeader(HttpHeaders.AUTHORIZATION);
         if(bearer == null || !bearer.startsWith("Bearer ")){
-            chain.doFilter(request, response);
-            return;
+            try{
+                chain.doFilter(request, response);
+                return;
+            }catch(Exception e){
+                response.setStatus(200);
+                response.setContentType("application/json;charset=UTF-8");
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.getWriter().println("{ \"success\" :" + false+"}" );
+
+            }
+
         }
-        String token = bearer.substring("Bearer ".length());
+        else {
+            String token = bearer.substring("Bearer ".length());
 //        VerifyResult result = JWTUtil.verify(token);
-        try{
-            VerifyResult result = JWTUtil.verify(token);
-            User user = (User) userService.loadUserByUsername(result.getUsername());
-            UsernamePasswordAuthenticationToken userToken = new UsernamePasswordAuthenticationToken(
-                    user.getUsername(), null, user.getAuthorities()
-            );
-            SecurityContextHolder.getContext().setAuthentication(userToken);
-            chain.doFilter(request, response);
+            try {
+                VerifyResult result = JWTUtil.verify(token);
+                User user = (User) userService.loadUserByUsername(result.getUsername());
+                UsernamePasswordAuthenticationToken userToken = new UsernamePasswordAuthenticationToken(
+                        user.getUsername(), null, user.getAuthorities()
+                );
+                SecurityContextHolder.getContext().setAuthentication(userToken);
+                chain.doFilter(request, response);
 
-        }catch(Exception e){
-            response.setStatus(200);
-            response.setContentType("application/json;charset=UTF-8");
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().println("{ \"success\" :" + false+"}" );
+            } catch (Exception e) {
+                response.setStatus(200);
+                response.setContentType("application/json;charset=UTF-8");
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.getWriter().println("{ \"success\" :" + false + "}");
+            }
         }
-
 //        if(result.isSuccess()){
 //            User user = (User) userService.loadUserByUsername(result.getUsername());
 //            UsernamePasswordAuthenticationToken userToken = new UsernamePasswordAuthenticationToken(
