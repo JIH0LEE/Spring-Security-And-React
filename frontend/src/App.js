@@ -6,6 +6,7 @@ import axios from 'axios';
 import { Route,Routes } from 'react-router-dom';
 import LandingPage from './Page/LandingPage';
 import LoginPage from './Page/LoginPage';
+import UserInfoPage from './Page/UserInfoPage';
 import RegisterPage from './Page/RegisterPage'
 function App() {
   useEffect(() => {
@@ -21,6 +22,7 @@ function App() {
         <Route exact path="/" element={<LandingPage/>} />
         <Route path="/sign-in" element={<LoginPage/>} />
         <Route path="/sign-up" element={<RegisterPage/>} />
+        <Route exact path="/user-info" element={<UserInfoPage/>} />
       </Routes>
     </div>
   );
